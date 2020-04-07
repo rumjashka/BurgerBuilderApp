@@ -4,8 +4,9 @@ import NavigationItems from "../NavigationItems/NavigationItems";
 import classes from "./SideDrawer.module.css";
 import Backdrop from "../../UI/Backdrop/Backdrop";
 import Aux from "../../../hoc/Aux/Aux";
+import { BrowserRouter as Router, Link } from "react-router-dom";
 
-const sideDrawer = props => {
+const sideDrawer = (props) => {
   let attachedClasses = [classes.SideDrawer, classes.Close];
   if (props.open) {
     attachedClasses = [classes.SideDrawer, classes.Open];
@@ -15,7 +16,11 @@ const sideDrawer = props => {
       <Backdrop show={props.open} clicked={props.closed} />
       <div className={attachedClasses.join(" ")}>
         <div className={classes.Logo}>
-          <Logo />
+          <Router>
+            <Link to="/">
+              <Logo />
+            </Link>
+          </Router>
         </div>
         <nav>
           <NavigationItems />

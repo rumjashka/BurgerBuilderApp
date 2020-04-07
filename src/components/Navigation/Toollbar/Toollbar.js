@@ -3,12 +3,15 @@ import classes from "./Toollbar.module.css";
 import Logo from "../../Logo/Logo";
 import NavigationItems from "../NavigationItems/NavigationItems";
 import DrawerToggle from "../SideDrawer/DrawerToggle/DrawerToggle";
+import { Link } from "react-router-dom";
 
-const toollbar = props => (
+const toollbar = (props) => (
   <header className={classes.Toollbar}>
     <DrawerToggle clicked={props.drawerToggleClicked} />
     <div className={classes.Logo}>
-      <Logo />
+      <Link to="/">
+        <Logo />
+      </Link>
     </div>
     <nav className={classes.DesktopOnly}>
       <NavigationItems />
