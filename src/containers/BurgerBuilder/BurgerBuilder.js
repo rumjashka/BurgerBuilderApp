@@ -7,11 +7,11 @@ import Modal from "../../components/UI/Modal/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
-import * as burgerBuilderActions from "../../store/actions/index";
+import * as actions from "../../store/actions/index";
 import axios from "../../axios-order";
 class BurgerBuilder extends Component {
   state = {
-    purcheasing: false,
+    purchasable: false,
   };
 
   componentDidMount() {
@@ -31,11 +31,16 @@ class BurgerBuilder extends Component {
   };
 
   purcheaseHandler = () => {
-    this.setState({ purcheasing: true });
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasable: true });
+    } else {
+      this.props.onSetAuthRedirectPath("/checkout");
+      this.props.history.push("/auth");
+    }
   };
 
   purcheaseCanselHandler = () => {
-    this.setState({ purcheasing: false });
+    this.setState({ purchasable: false });
   };
 
   purcheaseContinueHandler = () => {
@@ -65,8 +70,9 @@ class BurgerBuilder extends Component {
             ingredientAdded={this.props.onIngredientAdded}
             ingredientRemoved={this.props.onIngredientRemoved}
             disabled={disabledInfo}
-            purcheeable={this.updatePurchaseState(this.props.ingr)}
+            purchasable={this.updatePurchaseState(this.props.ingr)}
             ordered={this.purcheaseHandler}
+            isAuth={this.props.isAuthenticated}
             price={this.props.price}
           />
         </Aux>
@@ -99,16 +105,18 @@ const mapStateToProps = (state) => {
     ingr: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error,
+    isAuthenticated: state.auth.token !== null,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onIngredientAdded: (ingName) =>
-      dispatch(burgerBuilderActions.addIngredient(ingName)),
+    onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
     onIngredientRemoved: (ingName) =>
-      dispatch(burgerBuilderActions.removeIngredient(ingName)),
-    onInitIngredient: () => dispatch(burgerBuilderActions.initIngredients()),
-    onInintPurchase: () => dispatch(burgerBuilderActions.purchaseInit()),
+      dispatch(actions.removeIngredient(ingName)),
+    onInitIngredient: () => dispatch(actions.initIngredients()),
+    onInintPurchase: () => dispatch(actions.purchaseInit()),
+    onSetAuthRedirectPath: (path) =>
+      dispatch(actions.setAuthRedirectPath(path)),
   };
 };
 
