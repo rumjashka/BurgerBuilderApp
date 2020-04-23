@@ -11,15 +11,14 @@ import * as actions from "../../store/actions/index";
 import axios from "../../axios-order";
 class BurgerBuilder extends Component {
   state = {
-    purchasable: false,
+    purchasing: false,
   };
 
   componentDidMount() {
-    console.log(this.props);
-    this.props.onInitIngredient();
+    this.props.onInitIngredients();
   }
 
-  updatePurchaseState = (ingredients) => {
+  updatePurchaseState(ingredients) {
     const sum = Object.keys(ingredients)
       .map((igKey) => {
         return ingredients[igKey];
@@ -28,50 +27,50 @@ class BurgerBuilder extends Component {
         return sum + el;
       }, 0);
     return sum > 0;
-  };
+  }
 
-  purcheaseHandler = () => {
+  purchaseHandler = () => {
     if (this.props.isAuthenticated) {
-      this.setState({ purchasable: true });
+      this.setState({ purchasing: true });
     } else {
       this.props.onSetAuthRedirectPath("/checkout");
       this.props.history.push("/auth");
     }
   };
 
-  purcheaseCanselHandler = () => {
-    this.setState({ purchasable: false });
+  purchaseCancelHandler = () => {
+    this.setState({ purchasing: false });
   };
 
-  purcheaseContinueHandler = () => {
-    this.props.onInintPurchase();
+  purchaseContinueHandler = () => {
+    this.props.onInitPurchase();
     this.props.history.push("/checkout");
   };
 
   render() {
     const disabledInfo = {
-      ...this.props.ingr,
+      ...this.props.ings,
     };
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
     let orderSummary = null;
-
     let burger = this.props.error ? (
-      <p>INGREDIENT CAN'T BE LOADED...</p>
+      <p>Ingredients can't be loaded!</p>
     ) : (
       <Spinner />
     );
-    if (this.props.ingr) {
+
+    if (this.props.ings) {
       burger = (
         <Aux>
-          <Burger ingredients={this.props.ingr} />
+          <Burger ingredients={this.props.ings} />
           <BuildControls
             ingredientAdded={this.props.onIngredientAdded}
             ingredientRemoved={this.props.onIngredientRemoved}
             disabled={disabledInfo}
-            purchasable={this.updatePurchaseState(this.props.ingr)}
-            ordered={this.purcheaseHandler}
+            purchasable={this.updatePurchaseState(this.props.ings)}
+            ordered={this.purchaseHandler}
             isAuth={this.props.isAuthenticated}
             price={this.props.price}
           />
@@ -79,18 +78,18 @@ class BurgerBuilder extends Component {
       );
       orderSummary = (
         <OrderSummary
-          ingredients={this.props.ingr}
-          purcheaseCancelled={this.purcheaseCanselHandler}
-          purcheaseContinue={this.purcheaseContinueHandler}
+          ingredients={this.props.ings}
           price={this.props.price}
+          purchaseCancelled={this.purchaseCancelHandler}
+          purchaseContinued={this.purchaseContinueHandler}
         />
       );
     }
     return (
       <Aux>
         <Modal
-          show={this.state.purcheasing}
-          modalClosed={this.purcheaseCanselHandler}
+          show={this.state.purchasing}
+          modalClosed={this.purchaseCancelHandler}
         >
           {orderSummary}
         </Modal>
@@ -102,19 +101,20 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ingr: state.burgerBuilder.ingredients,
+    ings: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error,
     isAuthenticated: state.auth.token !== null,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
     onIngredientRemoved: (ingName) =>
       dispatch(actions.removeIngredient(ingName)),
-    onInitIngredient: () => dispatch(actions.initIngredients()),
-    onInintPurchase: () => dispatch(actions.purchaseInit()),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
+    onInitPurchase: () => dispatch(actions.purchaseInit()),
     onSetAuthRedirectPath: (path) =>
       dispatch(actions.setAuthRedirectPath(path)),
   };

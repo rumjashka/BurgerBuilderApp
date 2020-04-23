@@ -41,7 +41,7 @@ const removeIngredient = (state, action) => {
   return updateObject(state, updatedSt);
 };
 
-const setIngredient = (state, action) => {
+const setIngredients = (state, action) => {
   return updateObject(state, {
     ingredients: {
       salad: action.ingredients.salad,
@@ -62,7 +62,7 @@ const reduser = (state = initialState, action) => {
     case actionTypes.REMOVE_INGREDIENT:
       return removeIngredient(state, action);
     case actionTypes.SET_INGREDIENTS:
-      return setIngredient(state, action);
+      return setIngredients(state, action);
     case actionTypes.FETCH_INGREDIENTS_FAILED:
       return updateObject(state, { error: true });
     default:
