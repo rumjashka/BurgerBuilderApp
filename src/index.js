@@ -11,7 +11,10 @@ import burgerBuilderReduser from "./store/redusers/burgerBuilder";
 import orderReduser from "./store/redusers/order";
 import authReduser from "./store/redusers/auth";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers =
+  process.env.NODE_ENV === "development"
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : null || compose;
 
 const rootReduser = combineReducers({
   burgerBuilder: burgerBuilderReduser,
